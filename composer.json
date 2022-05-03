@@ -1,0 +1,25 @@
+{
+    "name": "charliemtnez/artist-back-office",
+    "description": "The artist payment control back-office built with native PHP.",
+    "keywords": ["backoffice", "charliemtnez"],
+    "license": "MIT",
+    "type": "project",
+    "version": "v1.1.0",
+    "authors": [{
+        "name": "Charlie Mtnez",
+        "email": "cmball.charlie@gmail.com",
+        "role": "Developer"
+    }],
+    "require": {
+        "php": ">=7.2",
+        "phpoffice/phpspreadsheet": "^1.15",
+        "nuovo/spreadsheet-reader": "^0.5.11",
+        "firebase/php-jwt": "^6.1"
+    },
+    "autoload": {
+        "files": ["src/functions.php","src/site_config.php"],
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
