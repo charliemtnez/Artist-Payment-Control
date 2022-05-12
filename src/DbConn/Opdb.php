@@ -2,6 +2,8 @@
 
     namespace App\DbConn;
 
+use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
+
     class Opdb{
         protected $error = NULL;
         private $stmt = NULL;
@@ -164,6 +166,117 @@
             }
         }
 
+        public function addItem(string $table, array $data_array, $close = false) :bool
+        {
+            if(!empty(trim($table)) && is_string($table)){
+                if(!empty($data_array) && is_array($data_array)){
+                    $sql = "INSERT INTO ".$table." (`".implode("`, `", array_keys($data_array))."`) VALUES ('".implode("', '", array_values($data_array))."')";
+                    $this->stmt = $this->exec_sql($sql);
+                    if($this->stmt){
+                        $lastInsertId = $this->conn->lastInsertId();
+                        $this->stmt = null;
+                        $this->error = null;
+                        if($close){ $this->disconnect(); }
+                        return $lastInsertId;
+                    }else{
+                        return false;
+                    }
+                }else{
+                    $this->error = 'Los campos para adionar no pueden estar vacíos y deben ser un array tipo llave => valor';
+                    return false;
+                }
+            }else{
+                $this->error = 'El nombre de la tabla tiene que ser un texto y no puede estar vacío.';
+                return false;
+            }
+        }
+
+        public function updItem(string $table, array $data_array, $conditions, $close = false) :bool
+        {
+            $colvalSet = '';
+            if(!empty(trim($table)) && is_string($table)){
+                if(!empty($data_array) && is_array($data_array)){
+                    $i = 0;
+                    foreach($data_array as $key=>$val){
+                        $pre = ($i > 0)?', ':'';
+                        $colvalSet .= $pre.$key."='".$val."'";
+                        $i++;
+                    }
+    
+                    $whereSql = $this->conditionOrder($conditions);
+    
+                    $sql = "UPDATE ".$table." SET ".$colvalSet.$whereSql['where'];
+    
+                    if($this->exec_sql($sql)){
+                        $this->stmt = null;
+                        if($close){ $this->disconnect(); }
+                        return true;
+                    }else{
+                        return false;
+                    }
+    
+                }else{
+                    $this->error = 'Los campos para adionar no pueden estar vacíos y deben ser un array tipo llave => valor';
+                    return false;
+                }
+            }else{
+                $this->error = 'El nombre de la tabla tiene que ser un texto y no puede estar vacío.';
+                return false;
+            }
+        }
+
+        public function delItem(string $table, $conditions, $close = false) :bool
+        {
+            if(!empty(trim($table)) && is_string($table)){
+    
+                $whereSql = $this->conditionOrder($conditions);
+    
+                $sql = "DELETE FROM ".$table.$whereSql['where'];
+    
+                if($this->exec_sql($sql)){
+                    $this->stmt = null;
+                    if($close){ $this->disconnect(); }
+                    return true;
+                }else{
+                    return false;
+                }
+    
+            }else{
+                $this->error = 'El nombre de la tabla tiene que ser un texto y no puede estar vacío.';
+                return false;
+            }
+        }
+
+        public function execSql(string $sql_srting, $close = false){
+
+            if($this->exec_sql($sql_srting)){
+
+                if($this->stmt->rowCount() > 0 ){
+
+                    try{
+                        // $response = ($this->stmt->rowCount() == 1)?$this->stmt->fetch(\PDO::FETCH_ASSOC):$this->stmt->fetchAll(\PDO::FETCH_ASSOC);
+                        $response = $this->stmt->fetchAll(\PDO::FETCH_ASSOC);
+                        $this->error = null;
+                    }catch(\PDOException $e){
+                        $this->error = $e->getMessage();
+                        return false;
+                    }
+                    
+                    $this->stmt = null;
+                    if($close){ $this->disconnect(); }
+
+                    return $response;
+
+                }else{
+                    return true;
+                }
+                
+            }else{
+                return false;
+            }
+
+        }
+
         private function exec_sql($sql_srting) :bool
         {
             if(!empty(trim($sql_srting)) && is_string($sql_srting)){
@@ -192,6 +305,7 @@
                 return false;
             }
         }
+
         private function conditionOrder($condiciones='',$orden='', $limite=0, $start=0)
         {
             $whereSql = '';

@@ -9,6 +9,7 @@
     {
         protected static $_instance;
         protected static $key;
+        private $session_name;
         // private $table = 'user_sec';
         private $table_log = 'log_attempt';
         private $table_passreset = 'password_resets';
@@ -40,6 +41,76 @@
             return $this->user_auth;
         }
 
+
+        public function destroyAuth()
+        {
+            $_SESSION = array(); //Se desconfigura los valores de la session;
+            $parametros = session_get_cookie_params(); //obtiene los parametros de la session
+            //borra las cookies actuales
+            setcookie(session_name(), '', time() - 42000, $parametros['path'], $parametros['domain'],$parametros['secure'], $parametros['httponly']);
+            setcookie($this->session_name. '_auth', '', time() - 42000, $parametros['path'], $parametros['domain'],$parametros['secure'], $parametros['httponly']);
+            return session_destroy();
+        }
+
+        /**
+         * For user authentication 
+         * 
+         * @param array $data 
+         * @return array $response 
+         */
+        public function login_user(array $data)
+        {
+            $date = date("Y-m-d H:i:s");
+            $timer = time();
+
+            if(!$this->isUserBlock($data['user'])){
+                $user = $this->getUser($data['user'],1,true);
+                if($user){
+                    $password = hash('sha512', $data['pass'] . $user['salt']);
+                    if($password === $user['pass_usr']){
+                        $token = array(
+                            'iat'=>$timer,
+                            'exp'=>strtotime( '+30 days' ),
+                            'data'=>$this->user
+                        );
+                        $_SESSION[$this->session_name . '_auth'] = $this->user;
+
+                        $updLastAccess = $this->saveLastAccess();
+
+                        $delLogBlocj = $this->delItem($this->table_log,['email_usr'=>$this->user['email']]);
+
+                        if($data['remenberme'] == 'true'){
+                            $secure = (isset($_SERVER['HTTPS']))?true:false;
+                            $httponly = true; 
+                            $parametros = session_get_cookie_params();
+                            setcookie($this->session_name . '_auth', JWT::encode($token, self::$key, 'HS256'), strtotime( '+30 days' ), $parametros['path'], $parametros['domain'],$secure, $httponly);
+                        }
+
+                        return true;
+
+                    }else{
+                        $response=array(
+                            'user_usr'=> $user['user_usr'],
+                            'email_usr'=> $user['email_usr'],
+                            'time_user' => time()
+                        );
+                        $this->addItem($this->table_log,$response);
+                        $this->error = 'Existe un error en la contraseña. Intentelo nuevamente.';
+                        return false;
+                    }
+                }else{
+                    $this->error = 'No existe este usuario o correo. Por favor revise nuevamente.';
+                    return false;
+                }
+            }else{
+                $this->error = 'Este usuario o correo se encuentra bloqueado por intentos fallidos. Por favor debe esperar al menos 2 horas para volver a intentarlo o contacte con un administrativo.';
+                return false;
+            }
+
+            $this->error = 'No se ha podido realizar el proceso de login';
+            return false;
+        }
+
         private function sec_session_start() {
 
             $secure = false; //define los niveles de seguridad true es para https y false para http
@@ -65,7 +136,8 @@
     
             if(isset($_SESSION[$session_name_auth])){
                 
-                $this->user_auth = $_SESSION[$session_name_auth];
+                $this->user_auth = true;
+                $this->user = $_SESSION[$session_name_auth];
     
                 if(isset($_SESSION[$session_name_location])){
                     $location = $_SESSION[$session_name_location];
@@ -105,6 +177,21 @@
                 $parametros['domain'],
                 $secure, 
                 $httponly);
+        }
+
+        private function isUserBlock($user){
+
+            $now = time();
+            // Todos los intentos de inicio de sesión se cuentan desde las 2 horas anteriores.
+            $valid_attempts = $now - (2 * 60 * 60);
+    
+            $sql = "SELECT COUNT(time_user) as cant_login FROM log_attempt WHERE (user_usr = '".$user."' OR email_usr = '".$user."') AND time_user > ". $valid_attempts;
+            
+            $resultados = $this->execSql($sql);
+
+            // verifico si hay mas de 5 intentos en las 2 horas anteriores.
+            return (!empty($resultados) && $resultados[0]["cant_login"] > 5 )?true:false;
+    
         }
 
     }

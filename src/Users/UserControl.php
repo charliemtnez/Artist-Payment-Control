@@ -27,6 +27,7 @@
             'act_usr',
             'percent_usr',
         ];
+        protected $hiddenfields = ['pass_usr','salt'];
 
         public function __construct(){
             register_shutdown_function( array( $this, '__destruct' ) );
@@ -60,7 +61,7 @@
             }
         }
 
-        public function getUsers($id = '')
+        public function getUserbyId($id = '')
         {
             $cond =($id !== '')?array('id_usr'=>$id):'';
             $exists = $this->hasItems($this->table, $this->usefields, $cond,'',0 ,0);
@@ -75,23 +76,27 @@
             return $this->users;
         }
 
-        private function setUser(array $dbuser, $id = null): void
+        public function getUser($user,$act = null, $allfields = false)
         {
+            $cond = 'user_usr = "'.$user.'" OR email_usr = "'.$user; 
 
-            if(!empty($id)){ $this->user['id'] = $id; }
-
-            $this->user['name'] = $dbuser['nombre_usr'];
-            $this->user['lastname'] = $dbuser['apellido_usr'];
-            $this->user['bod'] = $dbuser['birthday_usr'];
-            $this->user['username'] = $dbuser['user_usr'];
-            $this->user['email'] = $dbuser['email_usr'];
-            $this->user['role'] = $dbuser['role_usr'];
-            $this->user['avatar'] = $dbuser['avatar'];
-            $this->user['type'] = $dbuser['type'];
-            $this->user['lastaccess'] = $dbuser['lastaccess'];
-            $this->user['act'] = $dbuser['act_usr'];
-
+            if($act){
+                $cond = $cond.'" AND act_usr = '.$act;
+            }
+            
+            $fields = ($allfields)?array_merge($this->usefields,$this->hiddenfields):$this->usefields;
+            $exist = $this->hasItems($this->table,$fields,$cond);
+            if($exist){
+                $this->setUser($exist[0],$exist[0]['id_usr']);
+            }
+            return ($exist)?$exist[0]:false;
         }
+
+        protected function saveLastAccess()
+        {
+            return $this->updItem($this->table,['lastaccess'=>date("Y-m-d H:i:s")],['id_usr'=>$this->user['id']]);
+        }
+
 
     }
 

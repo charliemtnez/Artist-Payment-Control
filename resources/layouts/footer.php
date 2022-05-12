@@ -14,5 +14,16 @@
 
         <script src="<?php echo getPathUriVar('URI'); ?>/js/scripts.js"></script>
 
+        <?php 
+
+            if(!empty($add) && is_array($add) && isset($add['js'])){
+                if(is_array($add['js']) && !empty($add['js'])){
+                    foreach($add['js'] as $js){
+                        echo '<script src="'.getPathUriVar('URI').'/js/'.$js.'.js"></script>';
+                    }
+                }
+            }
+        ?>
+
     </body>
 </html>
