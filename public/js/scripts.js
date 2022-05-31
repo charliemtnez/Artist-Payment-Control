@@ -33,8 +33,8 @@ function proccess_modal(body,title,footer,close = true){
 
     let modal_title = (title)?title:'';
 
-    if(!modal_title)
-        modal_header_content.append('<h4 class="modal-title" style="float: left;">'+modal_title+'</h4>');
+    if(modal_title)
+        modal_header_content.append('<h5 class="modal-title" style="float: left;">'+modal_title+'</h5>');
 
     if(close){
         modal_header_content.append('<button type="button" class="btn btn-danger text-white btn-outline-light btn-rounded waves-effect" style="float: right;" onclick="CloseModal();"> <i class="fa fa-times"></i> </button>');
@@ -97,8 +97,9 @@ function proccess_ajax(data_post, uri, loading = false){
         success:function(response){
             //console.log(response);
            // return response;
-           if(loading)
-            setTimeout(function(){loadingSpinner(false);}, 1000);
+
+        //    if(loading)
+        //     setTimeout(function(){loadingSpinner(false);}, 1000);
 
         },
         error:function(xhr, status, error){
@@ -107,10 +108,10 @@ function proccess_ajax(data_post, uri, loading = false){
     });
 }
 
-function proccess_ajaxfile(data_post, uri, loading = false){
+function proccess_ajaxfile(data_post, uri, loading = false, titleloading = 'Loading...'){
 
     if(loading)
-        loadingSpinner();
+        loadingSpinner(true,titleloading);
     
     return $.ajax({
         type: 'POST',
@@ -120,8 +121,8 @@ function proccess_ajaxfile(data_post, uri, loading = false){
         processData: false,
         data: data_post,
         dataType: 'json',
-        beforeSend: function(objeto){
-            console.log(objeto);
+        beforeSend: function(obj){
+            console.log(obj);
             // $('#calendar').html('<h5 class="lead">Cargando la información de los calendarios, por favor espere....</h5>');
         },
         success:function(response){
@@ -144,7 +145,7 @@ function loadingSpinner(open = true, title){
         let msg = (title)?title:'Loading...';
         let loading = '<div class="text-center" ><button class="btn btn-outline-secondary" type="button" onclick="CloseModal()">'+
                             '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'+
-                            '<span class="visually-hidden ml-3 loadmsg">'+msg+'</span>'+
+                            '<span class="ml-3 loadmsg">'+msg+'</span>'+
                         '</button></div>';
 
         proccess_modal(loading,'','',false);

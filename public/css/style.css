@@ -2,3 +2,7 @@ body#login {
     background: rgb(76,75,80);
     background: linear-gradient(0deg, rgba(76,75,80,1) 0%, rgba(237,183,219,1) 100%);
 }
+table td {
+    word-wrap: break-word;
+    /* max-width: 400px; */
+  }

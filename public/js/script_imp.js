@@ -2,17 +2,15 @@ function activatelog(chk){
     if($(chk).is(":checked")){
         $('#email').attr('disabled',false);
         $('#user').attr('disabled',false);
-        $('#user').attr('readonly',false);
         $('#pass').attr('disabled',false);
     }else if($(chk).is(":not(:checked)")){
         $('#email').attr('disabled',true);
         $('#user').attr('disabled',true);
-        $('#user').attr('readonly',true);
         $('#pass').attr('disabled',true);
     }
 }
 
-function manage_art(form){
+function manage_imp(form){
 
     var loading = true; 
     var titleloading = 'Espere. Puede tardar...'; 
@@ -45,19 +43,8 @@ function manage_art(form){
 
                 loading = false;
             break;
-            case 'view_art':
-                var formData = new FormData();
-                formData.append('action',form.name);
-
-                if (form.hasOwnProperty("info")) {
-                    formData.append('idart',form.info.data('art'));
-                }
-
-                titleloading = 'Cargando datos. Puede tardar...';
-            break;
 
             case 'add_art':
-            case 'edt_art':
                 var formData = new FormData(form);
                 formData.append('action',form.name);
 
@@ -185,7 +172,7 @@ function manage_art(form){
 
     }
 
-    proccess_ajaxfile(formData,window.location.origin+'/art/act/act_art',loading, titleloading).then((obj)=>{
+    proccess_ajaxfile(formData,window.location.origin+'/imp/act/act_imp',loading, titleloading).then((obj)=>{
 
         loadingSpinner(false);
 
@@ -219,19 +206,9 @@ function manage_art(form){
             $('#btn_imp').html(obj.btn_imp);
         }
 
-        if (obj.hasOwnProperty("edt_art") || obj.hasOwnProperty("add_art")) {
-
-            $(`#panel`).slideUp();
-            $(`html,body`).animate({ scrollTop: $(`body`).offset().top }, `slow`);
-            $(`#crea_rol`).removeAttr(`disabled`);
+        if (obj.hasOwnProperty("imp_file")) {
             
-            manage_art({'name':'init'});
-
-        }
-
-        if (obj.hasOwnProperty("view_art")) {
-            
-            $('#artistas').html(obj.view_art);
+            manage_imp({'name':'init'});
 
         }
 
@@ -263,9 +240,9 @@ function manage_art(form){
             $(`#crea_rol`).removeAttr(`disabled`);$(`#importxls`).removeAttr(`disabled`);
         }
 
-        if (obj.hasOwnProperty("table_art")) {
+        if (obj.hasOwnProperty("table_prevartimp")) {
             
-            $('#artistas').html(obj.table_art.table);
+            $('#artistas').html(obj.table_prevartimp.table);
 
             $('#newartist').DataTable({
                 destroy: true,
@@ -275,18 +252,15 @@ function manage_art(form){
                 lengthChange: false,
                 pageLength: 25,
                 language:{"url":'js/datatable_spanish.json'},
-                data:Object.values(obj.table_art.data),
+                data:Object.values(obj.table_prevartimp.data),
                 columns: [
-                    { title: "Usuario",data:"user"},
                     { title: "Artista",data:"nombre"},
-                    { title: "Correo",data:"email"},
-                    { title: "Creado",data:"created"},
-                    { title: "Ult. Accesso",data:"lastaccess"},
-                    { title: "",data:"actions_view", orderable: false },
-                    { title: "",data:"actions_edt", orderable: false },
-                    // { title: "",data:"actions_act", orderable: false },
-                    // { title: "",data:"actions_imp", orderable: false },
-                    // { title: "",data:"actions_del", orderable: false }
+                    { title: "Tracks",data:"tracks"},
+                    { title: "Vistas",data:"vistas"},
+                    { title: "Recibido",data:"monto"},
+                    // { title: "",data:"actions_edt", orderable: false },
+                    { title: "",data:"actions_imp", orderable: false },
+                    { title: "",data:"actions_del", orderable: false }
                 ]
             });
 

@@ -21,6 +21,9 @@ function userauth(form){
     let datapost = {'user':user,'pass':p,'act':'login','remenberme':remenberme};
 
     proccess_ajax(datapost,form.action,true).then((obj)=>{
+
+        loadingSpinner(false);
+        
         if(obj.ERROR){
             $('#msg_error').html(obj.ERROR).removeAttr('hidden');
             return false;

@@ -19,9 +19,10 @@
                 <!-- Content -->
 
                 <section>
-                    
-                    <div id="btn_imp"></div>
+                    <h2 class="mt-4">Importar Datos</h2>
 
+                    <div id="btn_imp"></div>
+                    
                     <hr />
 
                     <div id="panel" style="display: none;">
@@ -42,7 +43,7 @@
 
 <?php
     
-    getLayouts('footer',null,['js'=>['script_art']]);
+    getLayouts('footer',null,['js'=>['sha512','script_imp']]);
 
 ?>
-<script>manage_art({'name':'init'});</script>
+<script>manage_imp({'name':'init'});</script>

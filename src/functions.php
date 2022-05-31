@@ -2,7 +2,10 @@
     use App\Env\DotEnv;
     use App\UserAuth\UserAuth;
 
+
     (new DotEnv(__DIR__ . '/../.env'))->load();
+
+    ini_set('memory_limit','4000M');
     
     if(!empty($_ENV['APP_DEBUG']) && $_ENV['APP_DEBUG'] === true){
         error_reporting(E_ALL);

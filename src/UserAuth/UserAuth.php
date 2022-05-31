@@ -20,8 +20,9 @@
             register_shutdown_function( array( $this, '__destruct' ) );
             $this->session_name = $session_name;
             $this->sec_session_start();
-            $this->check_auth();
             self::$key = isset($_ENV['APP_KEY'])?$_ENV['APP_KEY']:"";
+            $this->check_auth();
+                       
         }
     
         public function __destruct() {
@@ -146,7 +147,7 @@
                 }
             
             }elseif(isset($_COOKIE[$session_name_auth])) {
-    
+   
                 $user_auth = json_decode(json_encode(JWT::decode($_COOKIE[$session_name_auth], self::$key, array('HS256'))),true);
                 $this->user_auth  = $user_auth['data'];
                 $_SESSION[$session_name_auth] = $this->user_auth;

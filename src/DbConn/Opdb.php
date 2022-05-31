@@ -166,11 +166,12 @@ use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
             }
         }
 
-        public function addItem(string $table, array $data_array, $close = false) :bool
+        public function addItem(string $table, array $data_array, $close = false)
         {
             if(!empty(trim($table)) && is_string($table)){
                 if(!empty($data_array) && is_array($data_array)){
                     $sql = "INSERT INTO ".$table." (`".implode("`, `", array_keys($data_array))."`) VALUES ('".implode("', '", array_values($data_array))."')";
+
                     $this->stmt = $this->exec_sql($sql);
                     if($this->stmt){
                         $lastInsertId = $this->conn->lastInsertId();
@@ -206,7 +207,7 @@ use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
                     $whereSql = $this->conditionOrder($conditions);
     
                     $sql = "UPDATE ".$table." SET ".$colvalSet.$whereSql['where'];
-    
+                    // var_dump($sql);    
                     if($this->exec_sql($sql)){
                         $this->stmt = null;
                         if($close){ $this->disconnect(); }
@@ -343,6 +344,14 @@ use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
             return array('where'=>$whereSql,'order'=>$orderSql, 'limit'=>$limitsql);
         }
 
+        protected function dataToJson($data)
+        {
+            $response = '{}';
+            if(is_array($data)){
+                $response = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_FORCE_OBJECT | JSON_HEX_APOS);
+            }
+            return $response;
+        }
 
     }
 

@@ -47,6 +47,10 @@
             return $this->user['role'];
         }
 
+        public function getPercent(){
+            return $this->user['percentart'];
+        }
+
         public function isAdmin(){
             return ($this->user['role'] === 'sadmin' || $this->user['role'] === 'admin')?true:false;
         }
@@ -74,6 +78,7 @@
             $this->user['type'] = $dbuser['type'];
             $this->user['lastaccess'] = $dbuser['lastaccess'];
             $this->user['act'] = $dbuser['act_usr'];
+            $this->user['percentart'] = $dbuser['percent_usr'];
 
         }
 

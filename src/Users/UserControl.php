@@ -92,6 +92,70 @@
             return ($exist)?$exist[0]:false;
         }
 
+        public function addUser($data, $avatar = null){
+    
+            $random_salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
+            $newpass = hash('sha512', $data['password'] . $random_salt);
+            
+            $user_array = array(
+                'user_usr' => (isset($data['user']))?$data['user']:'',
+                'nombre_usr' => $data['nombre'],
+                'apellido_usr' => (isset($data['apellido']))?$data['apellido']:'',
+                'email_usr' => (isset($data['email']))?$data['email']:'',
+                'pass_usr' => $newpass,
+                'salt' => $random_salt,
+                'birthday_usr' => (isset($data['birthday']))?$data['birthday']:'',
+                'role_usr' => (isset($data['role']))?$data['role']:'',
+                'avatar' => 'avatar-1.jpg',
+                'type' => $data['type'],
+                'created' => date("Y-m-d H:i:s"),
+                'act_usr' => (isset($data['active']))?$data['active']:0,
+                'percent_usr' => (isset($data['percent']))?$data['percent']:0,
+            );
+
+            $insert = $this->addItem("user_sec",$user_array);
+
+            if(!$insert){
+                $this->error = "No se ha podido procesar el registro del nuevo usuario. ".$this->get_error();
+                return false;
+            }
+
+            return $insert;
+            
+        }
+
+        public function updUser($data, $avatar = null){
+    
+            $random_salt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
+            $newpass = hash('sha512', $data['password'] . $random_salt);
+            
+            $user_array = array(
+                // 'user_usr' => (isset($data['user']))?$data['user']:'',
+                'nombre_usr' => $data['nombre'],
+                'apellido_usr' => (isset($data['apellido']))?$data['apellido']:'',
+                'email_usr' => (isset($data['email']))?$data['email']:'',
+                'pass_usr' => $newpass,
+                'salt' => $random_salt,
+                'birthday_usr' => (isset($data['birthday']))?$data['birthday']:'',
+                'role_usr' => (isset($data['role']))?$data['role']:'',
+                'avatar' => 'avatar-1.jpg',
+                'type' => $data['type'],
+                'created' => date("Y-m-d H:i:s"),
+                'act_usr' => (isset($data['active']))?$data['active']:0,
+                'percent_usr' => (isset($data['percent']))?$data['percent']:0,
+            );
+
+            $insert = $this->updItem("user_sec",$user_array,['id_usr'=>$data['id_user']]);
+
+            if(!$insert){
+                $this->error = "No se ha podido procesar el registro del nuevo usuario. ".$this->get_error();
+                return false;
+            }
+
+            return $insert;
+            
+        }
+
         protected function saveLastAccess()
         {
             return $this->updItem($this->table,['lastaccess'=>date("Y-m-d H:i:s")],['id_usr'=>$this->user['id']]);

@@ -23,6 +23,11 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-users-cog"></i></div>
                     Artistas
                 </a>
+
+                <a class="nav-link" href="<?php echo getPathUriVar('URI') ; ?>/imp">
+                    <div class="sb-nav-link-icon"><i class="fas fa-users-cog"></i></div>
+                    Importar
+                </a>
                 
     </nav>
 
