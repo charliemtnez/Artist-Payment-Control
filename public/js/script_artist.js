@@ -29,12 +29,12 @@ function manage_art(form){
 
         switch(form.name){
             case 'init':
-                var formData = new FormData();
+                /*var formData = new FormData();
                 formData.append('action',form.name);
                 loading = true;
                 titleloading = 'Cargando datos. Puede tardar...';
-            break;
-            case 'form_art':
+            break;*/
+            /*case 'form_art':
             case 'showform_import':
                 var formData = new FormData();
                 formData.append('action',form.name);
@@ -44,10 +44,11 @@ function manage_art(form){
                 }
 
                 loading = false;
-            break;
-            case 'view_art':
+            break;*/
+            /*case 'view_art':*/
                 var formData = new FormData();
                 formData.append('action',form.name);
+                formData.append('idart',form.idart);
 
                 if (form.hasOwnProperty("info")) {
                     formData.append('idart',form.info.data('art'));
@@ -64,7 +65,7 @@ function manage_art(form){
                 titleloading = 'Cargando datos. Puede tardar...';
             break;
 
-            case 'add_art':
+            /*case 'add_art':
             case 'edt_art':
                 var formData = new FormData(form);
                 formData.append('action',form.name);
@@ -110,7 +111,7 @@ function manage_art(form){
                     }
                 }
 
-            break;
+            break;*/
 
             /*case 'asociateart':
                 var asoci = $('select[name=artref] option').filter(':selected').val();
@@ -193,7 +194,8 @@ function manage_art(form){
 
     }
 
-    proccess_ajaxfile(formData,window.location.origin+'/art/act/act_art',loading, titleloading).then((obj)=>{
+
+    proccess_ajaxfile(formData,window.location.origin+'/dashboard/act/act_artist',loading, titleloading).then((obj)=>{
 
         loadingSpinner(false);
 
@@ -203,7 +205,7 @@ function manage_art(form){
             return false;
         }
 
-        if (obj.hasOwnProperty("showform")) {
+        /*if (obj.hasOwnProperty("showform")) {
             
             $('#crea_rol').attr("disabled", "disabled");
             $('#importxls').attr("disabled", "disabled");
@@ -221,13 +223,13 @@ function manage_art(form){
                     input.type = "password";
                 }
             });
-        }
+        }*/
         
         if (obj.hasOwnProperty("btn_imp")) {
             $('#btn_imp').html(obj.btn_imp);
         }
 
-        if (obj.hasOwnProperty("edt_art") || obj.hasOwnProperty("add_art")) {
+        /*if (obj.hasOwnProperty("edt_art") || obj.hasOwnProperty("add_art")) {
 
             $(`#panel`).slideUp();
             $(`html,body`).animate({ scrollTop: $(`body`).offset().top }, `slow`);
@@ -235,7 +237,7 @@ function manage_art(form){
             
             manage_art({'name':'init'});
 
-        }
+        }*/
 
         if (obj.hasOwnProperty("view_art")) {
             
@@ -245,7 +247,7 @@ function manage_art(form){
 
         if (obj.hasOwnProperty("view_artperiod")) {
 
-            console.log(obj.view_artperiod);
+            // console.log(obj.view_artperiod);
             
             $('#viewtotalperiod').html(obj.view_artperiod.view_arttotalperiod);
 
@@ -272,8 +274,8 @@ function manage_art(form){
                         { title: "Tracks",data:"title_track"},
                         { title: "Tipo Trans",data:"type_trans"},
                         { title: "Vistas",data:"qty",render: $.fn.dataTable.render.number( '.', ',', 0, '' )},
-                        { title: "Recibido (USD)",data:"receipts",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibido (ARG)",data:"total_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
+                        // { title: "Recibido (USD)",data:"receipts",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
+                        // { title: "Recibido (ARG)",data:"total_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
                         { title: "Recibe Art (USD)",data:"totalart_usd",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
                         { title: "Recibe Art (ARG)",data:"totalart_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )}
                     ]
@@ -299,8 +301,8 @@ function manage_art(form){
                         // { title: "Mes",data:"month"},
                         { title: "Tiendas",data:"retailer"},
                         { title: "Vistas",data:"qty",render: $.fn.dataTable.render.number( '.', ',', 0, '' )},
-                        { title: "Recibido (USD)",data:"receipts",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibido (ARG)",data:"total_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
+                        // { title: "Recibido (USD)",data:"receipts",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
+                        // { title: "Recibido (ARG)",data:"total_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
                         { title: "Recibe Art (USD)",data:"totalart_usd",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
                         { title: "Recibe Art (ARG)",data:"totalart_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )}
                     ]
@@ -326,8 +328,8 @@ function manage_art(form){
                         // { title: "Mes",data:"month"},
                         { title: "Paises",data:"country"},
                         { title: "Vistas",data:"qty",render: $.fn.dataTable.render.number( '.', ',', 0, '' )},
-                        { title: "Recibido (USD)",data:"receipts",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibido (ARG)",data:"total_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
+                        // { title: "Recibido (USD)",data:"receipts",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
+                        // { title: "Recibido (ARG)",data:"total_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
                         { title: "Recibe Art (USD)",data:"totalart_usd",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
                         { title: "Recibe Art (ARG)",data:"totalart_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )}
                     ]
@@ -338,35 +340,35 @@ function manage_art(form){
         }
 
 
-        if (obj.hasOwnProperty("impArtInfo")) {
+        /*if (obj.hasOwnProperty("impArtInfo")) {
             
             manage_imp({'name':'init'});
 
-        }
+        }*/
 
-        if (obj.hasOwnProperty("impArtLote")) {
+        /*if (obj.hasOwnProperty("impArtLote")) {
 
             btn_footer = '<button type="button" onclick="CloseModal()" class="btn btn-success" style="margin-right:10px;">OK</button>';
             
             proccess_modal(obj.impArtLote,'Resultados de importar en lote:',btn_footer);
             manage_imp({'name':'init'});
 
-        }
+        }*/
 
-        if (obj.hasOwnProperty("del_prevartimp") || obj.hasOwnProperty("del_allprevartimp")) {
+        /*if (obj.hasOwnProperty("del_prevartimp") || obj.hasOwnProperty("del_allprevartimp")) {
             
             manage_imp({'name':'init'});
 
-        }
+        }*/
 
-        if (obj.hasOwnProperty("artprevimp")) {
+        /*if (obj.hasOwnProperty("artprevimp")) {
             $('#artistas').html(obj.artprevimp);
             $(`#panel`).slideUp();
             $(`html,body`).animate({ scrollTop: $(`body`).offset().top }, `slow`);
             $(`#crea_rol`).removeAttr(`disabled`);$(`#importxls`).removeAttr(`disabled`);
-        }
+        }*/
 
-        if (obj.hasOwnProperty("table_art")) {
+        /*if (obj.hasOwnProperty("table_art")) {
             
             $('#artistas').html(obj.table_art.table);
 
@@ -393,7 +395,7 @@ function manage_art(form){
                 ]
             });
 
-        }
+        }*/
 
     });
 
@@ -403,6 +405,8 @@ function create_chart(data){
     let month_period = [];
     let period_value = [];
     let period_value_art = [];
+
+    console.log(data);
 
     let month = {1:'Enero', 2:'Febrero', 3:'Marzo', 4:'Abril', 5:'Mayo', 6:'Junio', 7:'Julio', 8:'Agosto', 9:'Septiembre', 10:'Octubre', 11:'Noviembre', 12:'Diciembre'};
 
@@ -421,7 +425,7 @@ function create_chart(data){
 
         Object.keys(month).map((key, index) => {
             if(data.hasOwnProperty(key)){
-                period_value.push(parseFloat(data[key].totalarg));
+                // period_value.push(parseFloat(data[key].totalarg));
                 period_value_art.push(parseFloat(data[key].totalartist)); 
             }else{
                 period_value.push(0);
@@ -430,7 +434,7 @@ function create_chart(data){
             month_period.push(month[key]);
         });  
 
-        let Chart_Mag = {
+       /* let Chart_Mag = {
             label: "Magenta",
             lineTension: 0.3,
             backgroundColor: "rgba(139,0,139,0.2)",
@@ -443,7 +447,7 @@ function create_chart(data){
             pointHitRadius: 30,
             pointBorderWidth: 2,
             data: period_value,
-            };
+            };*/
         let Chart_Art = {
             label: "Artista",
             lineTension: 0.3,
@@ -462,7 +466,8 @@ function create_chart(data){
         var DataChart = {
             // labels: month,
             labels: month_period,
-            datasets: [Chart_Mag,Chart_Art]
+            // datasets: [Chart_Mag,Chart_Art]
+            datasets: [Chart_Art]
         };
 
         new Chart(ctx, {

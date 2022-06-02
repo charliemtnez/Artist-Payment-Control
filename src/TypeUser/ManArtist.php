@@ -13,6 +13,7 @@
             'total_period',
             'total_period_arg',
             'total_period_artarg',
+            'total_period_views',
             'change_usd',
             'percent_imp',
             'data_import',
@@ -60,7 +61,42 @@
 
         public function getImpArtbyIdArt($id_art)
         {
-            return $this->hasItems($this->tableartimp,array_merge(['id'],$this->fieldsImp),['id_art'=>$id_art]);
+            $cond = ' art_importdata.id_art = '.$id_art.' ORDER BY `year` DESC, `month` DESC';
+            $response = $this->hasItems($this->tableartimp,array_merge(['id'],$this->fieldsImp),$cond);
+            return $response;
+        }
+
+        public function getTotalsArt($id)
+        {
+            $sql = 'SELECT
+                        `year`,
+                        `month`,
+                        change_usd,
+                        Sum(total_period) as totalusd,
+                        Sum(total_period_arg) as totalarg,
+                        Sum(total_period_artarg)/change_usd as totalartistusd,
+                        Sum(total_period_artarg) as totalartist,
+                        Sum(total_period_views) as totalviews
+                    FROM art_importdata 
+                    WHERE `id_art`="'.$id.'"
+                    GROUP BY `year`, `month` 
+                    ORDER BY `year` DESC, `month` DESC';
+
+            $totals = $this->execSql($sql);
+            $yearmonth = [];
+            if (!empty($totals) && is_array($totals)) {
+                foreach ($totals as $v) {
+                    $yearmonth[$v['year']][$v['month']] = [
+                        'totalusd' => $v['totalusd'],
+                        'totalarg' => $v['totalarg'],
+                        'totalartistusd' => $v['totalartistusd'],
+                        'totalartist' => $v['totalartist'],
+                        'totalviews' => $v['totalviews']
+                    ];
+                }
+            }
+
+            return ['totals'=>$totals,'yearmonth'=>$yearmonth];
         }
 
         public function addArt($data)

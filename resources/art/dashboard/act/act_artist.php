@@ -11,18 +11,18 @@ if(isset($_POST['action'])){
     switch($_POST['action']){
 
         case 'init':
-            $response['table_art'] = tableArt();
+           /* $response['table_art'] = tableArt();
             if($UserAuth->isAdmin()){
                 $response['btn_imp'] = btn_imp();
             }
             
-        break;
+        break;*/
 
-        case 'form_art':
+        /*case 'form_art':
             $response['showform']=(isset($_POST['idart']))?form_art($_POST['idart']):form_art();
-        break;
+        break;*/
 
-        case 'add_art':
+        /*case 'add_art':
             $response['add_art']=$_POST;
             $objArt = new ManArtist;
             $idart = $objArt->addArt($_POST);
@@ -33,8 +33,8 @@ if(isset($_POST['action'])){
                 }
 
             }
-        break;
-        case 'edt_art':
+        break;*/
+        /*case 'edt_art':
             $objArt = new ManArtist;
             $idart = $objArt->updArt($_POST);
             if($idart){
@@ -44,23 +44,25 @@ if(isset($_POST['action'])){
                 }
 
             }
-        break;
+        break;*/
 
-        case 'view_art':
+        /*case 'view_art':*/
 
             $objArt = new ManArtist;
             $totals = $objArt->getTotalsArt($_POST['idart']);
             $dataArt = prepareDataArt($objArt->getImpArtbyIdArt($_POST['idart']));
 
-            if($UserAuth->isAdmin()){
+            /* if($UserAuth->isAdmin()){
                 $response['btn_imp'] = btn_imp(false,$_POST['idart']);
-            }
+            } */
+
             $response['view_art'] = datArt($_POST['idart'],$totals['totals']);
 
             $response['view_artperiod']['view_arttotalperiod'] = viewtotalperiod($totals['totals'][0]['month'].'-'.$totals['totals'][0]['year'],$totals['yearmonth']);
 
             $response['view_artperiod']['totalyear'] = reset($totals['yearmonth']);
-            $response['view_artperiod']['dataArt'] = $dataArt;
+
+            // $response['view_artperiod']['dataArt'] = $dataArt;
 
             $response['view_artperiod']['tableArtTracks'] = tableArtTracks($dataArt[$totals['totals'][0]['year']][$totals['totals'][0]['month']]['tracks'],$dataArt[$totals['totals'][0]['year']][$totals['totals'][0]['month']]['change_usd']);
             $response['view_artperiod']['tableArtRetail'] = tableArtRetail($dataArt[$totals['totals'][0]['year']][$totals['totals'][0]['month']]['retailers'],$dataArt[$totals['totals'][0]['year']][$totals['totals'][0]['month']]['change_usd']);
@@ -93,7 +95,7 @@ if(isset($_POST['action'])){
     die(json_encode(['ERROR'=>'No existe POST'],JSON_UNESCAPED_UNICODE | JSON_FORCE_OBJECT));
 }
 
-function btn_imp($init = true, $id='')
+/*function btn_imp($init = true, $id='')
 {
     $html ='';
     if ($init) {
@@ -107,13 +109,13 @@ function btn_imp($init = true, $id='')
         $html .='<button type="button" name="volver" id="volver" class="btn btn-info btn-sm mr-2" onclick="manage_art({\'name\':\'init\'});"><i class="fas fa-arrow-left"></i> Volver</button>';
     }
     return $html;
-}
+}*/
 
 function datArt($idart, $totals)
 {
 
-    $acumulusd = array_sum(array_column($totals,'totalusd'));
-    $acumularg = array_sum(array_column($totals,'totalarg'));
+    // $acumulusd = array_sum(array_column($totals,'totalusd'));
+    // $acumularg = array_sum(array_column($totals,'totalarg'));
     $acumulargartusd = array_sum(array_column($totals,'totalartistusd'));
     $acumulargart = array_sum(array_column($totals,'totalartist'));
     $acumulviews = array_sum(array_column($totals,'totalviews'));
@@ -129,11 +131,13 @@ function datArt($idart, $totals)
     $response .= '      </div>';
     $response .= '  </div>';
     $response .= '  <div class="col-md-6 col-12">';
-    $response .= '      <p>Acumulado total hasta el momento (USD): $'.formatoarg($acumulusd).'<br />';
-    $response .= '      Acumulado total hasta el momento (ARG): $'.formatoarg($acumularg).'<br />';
+    $response .= '      <p>';
+    // $response .= '      Acumulado total hasta el momento (USD): $'.formatoarg($acumulusd).'<br />';
+    // $response .= '      Acumulado total hasta el momento (ARG): $'.formatoarg($acumularg).'<br />';
     $response .= '      Acumulado total hasta el momento para el artista (USD): $'.formatoarg($acumulargartusd).'<br />';
     $response .= '      Acumulado total hasta el momento para el artista (ARG): $'.formatoarg($acumulargart).'<br />';
-    $response .= '      Acumulado total de vistas: '.$acumulviews.'</p>';
+    $response .= '      Acumulado total de vistas: '.$acumulviews;
+    $response .= '      </p>';
     $response .= '  </div>';
     $response .= '</div>';
     $response .= '<hr />';
@@ -189,18 +193,20 @@ function prepareDataArt($data)
 function viewtotalperiod($period,$data)
 {
     $arrayperiod = explode("-",$period);
-    $acumulusd=$data[$arrayperiod[1]][$arrayperiod[0]]['totalusd'];
-    $acumularg=$data[$arrayperiod[1]][$arrayperiod[0]]['totalarg'];
+    // $acumulusd=$data[$arrayperiod[1]][$arrayperiod[0]]['totalusd'];
+    // $acumularg=$data[$arrayperiod[1]][$arrayperiod[0]]['totalarg'];
     $acumulargartusd=$data[$arrayperiod[1]][$arrayperiod[0]]['totalartistusd'];
     $acumulargart=$data[$arrayperiod[1]][$arrayperiod[0]]['totalartist'];
     $acumulviews=$data[$arrayperiod[1]][$arrayperiod[0]]['totalviews'];
 
     $html = '  <div>';
-    $html .= '      <p>Total del periodo (USD): $'.formatoarg($acumulusd).'<br />';
-    $html .= '      Total del periodo (ARG): $'.formatoarg($acumularg).'<br />';
+    $html .= '      <p>';
+    // $html .= '      Total del periodo (USD): $'.formatoarg($acumulusd).'<br />';
+    // $html .= '      Total del periodo (ARG): $'.formatoarg($acumularg).'<br />';
     $html .= '      Total del periodo para el artista (USD): $'.formatoarg($acumulargartusd).'<br />';
     $html .= '      Total del periodo para el artista (ARG): $'.formatoarg($acumulargart).'<br />';
-    $html .= '      Total de vistas en el Periodo: '.$acumulviews.'</p>';
+    $html .= '      Total de vistas en el Periodo: '.$acumulviews;
+    $html .= '      </p>';
     $html .= '  </div>';
 
     return $html;
@@ -247,7 +253,7 @@ function artNav()
     $html .= '  <div class="tab-pane show fade active pt-4 pb-5" id="chart" role="tabpanel" aria-selected="true">';
     $html .= '      <div class="card mb-4">';
     $html .= '          <div class="card-header">';
-    $html .= '              <i class="fas fa-chart-area mr-1"></i><sapn id="title_chart">Ingresos en el año</span>';
+    $html .= '              <i class="fas fa-chart-area mr-1"></i><sapn id="title_chart">Ingresos en Pesos Argentinos en el año</span>';
     $html .= '          </div>';
     $html .= '          <div class="card-body">';
     $html .= '              <canvas id="myAreaChart" width="100%" height="30"></canvas>';
@@ -281,7 +287,7 @@ function find_country($countries,$needer)
 
 }
 
-function form_art($idart = null, $artref =null)
+/*function form_art($idart = null, $artref =null)
 {
 
     $name_form = ($idart || $idart != 0)?'edt_art':'add_art';
@@ -407,9 +413,9 @@ function form_art($idart = null, $artref =null)
     $html .= '</form>';
 
     return $html;
-}
+}*/
 
-function tableArt()
+/*function tableArt()
 {
     $html = '<table id="newartist" class="table table-sm table-striped dt-responsive mt-3 mb-4" style="width:100%">';
     $html .= '</table>';
@@ -446,7 +452,7 @@ function tableArt()
         'table'=>$html,
         'type'=>'art'
     );
-}
+}*/
 
 function tableArtTracks($tracks, $change_usd /*, $idart,$prevImp = true*/)
 {

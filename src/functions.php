@@ -115,12 +115,15 @@
 
                 include $path;
 
-            
-            
-
         }
         
 
+    }
+
+    // función que da el formato visual del precio ARS
+    function formatoarg($precio){
+        $formaprecio = number_format($precio,2,",",".");
+        return $formaprecio;
     }
 
 ?>

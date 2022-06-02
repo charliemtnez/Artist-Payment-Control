@@ -42,7 +42,7 @@
 
 <?php
     
-    getLayouts('footer',null,['js'=>['script_art']]);
+    getLayouts('footer',null,['js'=>['sha512','script_art']]);
 
 ?>
 <script>manage_art({'name':'init'});</script>
