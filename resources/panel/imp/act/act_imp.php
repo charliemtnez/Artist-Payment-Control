@@ -521,7 +521,6 @@ function form_artref($idart = null, $artref =null)
         $objArt = new ManArtist;
         $art = $objArt->getUserbyId($idart);
 
-        // var_dump($art);
     }
     
 

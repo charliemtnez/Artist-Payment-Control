@@ -122,16 +122,10 @@ function proccess_ajaxfile(data_post, uri, loading = false, titleloading = 'Load
         data: data_post,
         dataType: 'json',
         beforeSend: function(obj){
-            console.log(obj);
-            // $('#calendar').html('<h5 class="lead">Cargando la información de los calendarios, por favor espere....</h5>');
+            // console.log(obj);
         },
         success:function(response){
-            //console.log(response);
-           // return response;
-
-        //    if(loading)
-        //     setTimeout(function(){loadingSpinner(false);}, 1000);
-
+            // console.log(response);
         },
         error:function(xhr, status, error){
             // console.log(error);

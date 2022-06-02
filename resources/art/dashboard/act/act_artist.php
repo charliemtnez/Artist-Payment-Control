@@ -1,68 +1,21 @@
 <?php
 use App\TypeUser\ManArtist;
-use App\MagImport\MagImport;
-
-use App\ChunkReader\ChunkReadFilter;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Reader\Csv;
 
 if(isset($_POST['action'])){
 
     switch($_POST['action']){
 
         case 'init':
-           /* $response['table_art'] = tableArt();
-            if($UserAuth->isAdmin()){
-                $response['btn_imp'] = btn_imp();
-            }
-            
-        break;*/
-
-        /*case 'form_art':
-            $response['showform']=(isset($_POST['idart']))?form_art($_POST['idart']):form_art();
-        break;*/
-
-        /*case 'add_art':
-            $response['add_art']=$_POST;
-            $objArt = new ManArtist;
-            $idart = $objArt->addArt($_POST);
-            if($idart){
-                $response['add_art']=true;
-                if($UserAuth->isAdmin()){
-                    $response['btn_imp'] = btn_imp();
-                }
-
-            }
-        break;*/
-        /*case 'edt_art':
-            $objArt = new ManArtist;
-            $idart = $objArt->updArt($_POST);
-            if($idart){
-                $response['edt_art']=true;
-                if($UserAuth->isAdmin()){
-                    $response['btn_imp'] = btn_imp();
-                }
-
-            }
-        break;*/
-
-        /*case 'view_art':*/
 
             $objArt = new ManArtist;
             $totals = $objArt->getTotalsArt($_POST['idart']);
             $dataArt = prepareDataArt($objArt->getImpArtbyIdArt($_POST['idart']));
-
-            /* if($UserAuth->isAdmin()){
-                $response['btn_imp'] = btn_imp(false,$_POST['idart']);
-            } */
 
             $response['view_art'] = datArt($_POST['idart'],$totals['totals']);
 
             $response['view_artperiod']['view_arttotalperiod'] = viewtotalperiod($totals['totals'][0]['month'].'-'.$totals['totals'][0]['year'],$totals['yearmonth']);
 
             $response['view_artperiod']['totalyear'] = reset($totals['yearmonth']);
-
-            // $response['view_artperiod']['dataArt'] = $dataArt;
 
             $response['view_artperiod']['tableArtTracks'] = tableArtTracks($dataArt[$totals['totals'][0]['year']][$totals['totals'][0]['month']]['tracks'],$dataArt[$totals['totals'][0]['year']][$totals['totals'][0]['month']]['change_usd']);
             $response['view_artperiod']['tableArtRetail'] = tableArtRetail($dataArt[$totals['totals'][0]['year']][$totals['totals'][0]['month']]['retailers'],$dataArt[$totals['totals'][0]['year']][$totals['totals'][0]['month']]['change_usd']);
@@ -95,32 +48,12 @@ if(isset($_POST['action'])){
     die(json_encode(['ERROR'=>'No existe POST'],JSON_UNESCAPED_UNICODE | JSON_FORCE_OBJECT));
 }
 
-/*function btn_imp($init = true, $id='')
-{
-    $html ='';
-    if ($init) {
-        $html .= '<h2 class="mt-4">Artistas</h2>';
-        $html .='<button type="button" name="crea_rol" id="crea_rol" class="btn btn-info btn-sm" onclick="manage_art({\'name\':\'form_art\'});">Crear artista</button>';
-        
-    }else{
-        $objArt = new ManArtist;
-        $art = $objArt->getUserbyId($id);
-        $html .= '<h2 class="mt-4">Artista <b>'.$art[0]['name'] .' '. $art[0]['lastname'].'</b></h2>';
-        $html .='<button type="button" name="volver" id="volver" class="btn btn-info btn-sm mr-2" onclick="manage_art({\'name\':\'init\'});"><i class="fas fa-arrow-left"></i> Volver</button>';
-    }
-    return $html;
-}*/
-
 function datArt($idart, $totals)
 {
 
-    // $acumulusd = array_sum(array_column($totals,'totalusd'));
-    // $acumularg = array_sum(array_column($totals,'totalarg'));
     $acumulargartusd = array_sum(array_column($totals,'totalartistusd'));
     $acumulargart = array_sum(array_column($totals,'totalartist'));
     $acumulviews = array_sum(array_column($totals,'totalviews'));
-
-    // $acumulargartusd = $acumulargart/$totals['change_usd'];
 
     $response = '';
 
@@ -132,8 +65,6 @@ function datArt($idart, $totals)
     $response .= '  </div>';
     $response .= '  <div class="col-md-6 col-12">';
     $response .= '      <p>';
-    // $response .= '      Acumulado total hasta el momento (USD): $'.formatoarg($acumulusd).'<br />';
-    // $response .= '      Acumulado total hasta el momento (ARG): $'.formatoarg($acumularg).'<br />';
     $response .= '      Acumulado total hasta el momento para el artista (USD): $'.formatoarg($acumulargartusd).'<br />';
     $response .= '      Acumulado total hasta el momento para el artista (ARG): $'.formatoarg($acumulargart).'<br />';
     $response .= '      Acumulado total de vistas: '.$acumulviews;
@@ -193,16 +124,12 @@ function prepareDataArt($data)
 function viewtotalperiod($period,$data)
 {
     $arrayperiod = explode("-",$period);
-    // $acumulusd=$data[$arrayperiod[1]][$arrayperiod[0]]['totalusd'];
-    // $acumularg=$data[$arrayperiod[1]][$arrayperiod[0]]['totalarg'];
     $acumulargartusd=$data[$arrayperiod[1]][$arrayperiod[0]]['totalartistusd'];
     $acumulargart=$data[$arrayperiod[1]][$arrayperiod[0]]['totalartist'];
     $acumulviews=$data[$arrayperiod[1]][$arrayperiod[0]]['totalviews'];
 
     $html = '  <div>';
     $html .= '      <p>';
-    // $html .= '      Total del periodo (USD): $'.formatoarg($acumulusd).'<br />';
-    // $html .= '      Total del periodo (ARG): $'.formatoarg($acumularg).'<br />';
     $html .= '      Total del periodo para el artista (USD): $'.formatoarg($acumulargartusd).'<br />';
     $html .= '      Total del periodo para el artista (ARG): $'.formatoarg($acumulargart).'<br />';
     $html .= '      Total de vistas en el Periodo: '.$acumulviews;
@@ -287,174 +214,8 @@ function find_country($countries,$needer)
 
 }
 
-/*function form_art($idart = null, $artref =null)
-{
 
-    $name_form = ($idart || $idart != 0)?'edt_art':'add_art';
-    $readonly = ($idart)?'readonly':'';
-    $art = null;
-    $imputidart = '';
-    $refart = null;
-
-    if($idart || $idart != 0){
-        $objArt = new ManArtist;
-        $art = $objArt->getUserbyId($idart);
-        $imputidart = '<input type="hidden" id="idart" name="idart" class="form-control" value="'.$idart.'" />';
-        $refart = $objArt->getRefArt($idart);
-    }
-    
-
-    $user_usr = ($art)?$art[0]['username']:'';
-    $email_usr = ($art)?$art[0]['email']:'';
-    $nombre_usr = ($art)?$art[0]['name']:(($artref)?$artref:'');
-    $apellido_usr = ($art)?$art[0]['lastname']:'';
-    $birthday_usr = ($art)?$art[0]['bod']:'';
-    $percent_usr = ($art)?$art[0]['percentart']:'';
-
-    $disabled = 'disabled';
-    $checked = '';
-
-    if(!empty(trim($user_usr))){
-        $disabled = '';
-        $checked = 'checked';
-    }
-
-    $html = '<form name="'.$name_form.'">';
-
-    $html .= '<div class="row mb-3">';
-
-    $html .= '  <div class="col-md-8">';
-    $html .= 'Los campos con <code><i class="text-muted">(*)</i></code> son obligatorios.';
-    $html .= '      <div id="act_msg"></div>';
-    $html .= '      <input type="hidden" id="art" name="type" value="art" />';
-    $html .= '  </div>';
-    $html .= '</div>';
-
-    $html .= '<div class="form-row">';
-    $html .= '  <div class="form-group col-md-4">';
-    $html .= '      <label for="nombre" class="col-form-label">Nombre: <i class="text-muted">(*)</i></label>';
-    $html .= '      <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Entre el nombre" value="'.$nombre_usr.'" />';
-    $html .= '  </div>';
-    $html .= '  <div class="form-group col-md-4">';
-    $html .= '      <label for="apellido" class="col-form-label">Apellido:</label>';
-    $html .= '      <input type="text" id="apellido" name="apellido" class="form-control" placeholder="Entre el apellido" value="'.$apellido_usr.'" />';
-    $html .= '  </div>';
-    $html .= '  <div class="form-group col-md-2">';
-    $html .= '      <label for="percent" class="col-form-label">Porciento aplicado: <i class="text-muted">(*)</i></label>';
-    $html .= '      <input type="numeric" id="percent" name="percent" class="form-control" placeholder="0" value="'.$percent_usr.'" />';
-    $html .= '  </div>';
-
-    $html .= '  <div class="form-group col-md-2">';
-    $html .= '      <label for="birthday" class="col-form-label">Fecha Nacimiento:</label>';
-    $html .= '      <input type="date" id="birthday" name="birthday" class="form-control" placeholder="Entre el correo" value="'.$birthday_usr.'" />';
-    $html .= '  </div>';
-    $html .= '</div>';
-
-    $html .= '<div class="form-row"><div class="col-12"><hr />';
-    $html .=                '<div class="form-check form-switch">';
-    $html .=                    '<input class="form-check-input" type="checkbox" role="switch" id="canlog" name="canlog" value="canlog" onclick="activatelog(this)" '.$checked.' />';
-    $html .=                    '<label class="form-check-label" for="hashead">Puede logearse</label>';
-    $html .=                '</div>';
-    $html .= '</div></div>';
-
-    $html .= '<div class="form-row">';
-    $html .= '  <div class="form-group col-md-6">';
-    $html .= '      <label for="email" class="col-form-label">Correo: <i class="text-muted">(*)</i></label>';
-    $html .= '      <input type="email" id="email" name="email" class="form-control" placeholder="Entre el correo" value="'.$email_usr.'" '.$disabled.' />';
-    $html .= '  </div>';
-    $html .= '  <div class="form-group col-md-3">';
-    $html .= '      <label for="user" class="col-form-label">Usuario: <i class="text-muted">(*)</i></label>';
-    $html .= '      <input type="text" id="user" name="user" class="form-control" placeholder="Entre el nombre de usuario" value="'.$user_usr.'" '.$readonly.' '.$disabled.' />';
-    $html .= '  </div>';
-    // $html .= '  <div class="form-group col-md-3">';
-    // $html .= '      <label for="pass" class="col-form-label">Contraseña: <i class="text-muted">(*)</i></label>';
-    // $html .= '      <input type="password" id="pass" name="pass" class="form-control" placeholder="Entre una contraseña" />';
-    // $html .= '  </div>';
-    $html .= '  <div class="form-group col-md-3">';
-    $html .= '      <label for="pass" class="col-form-label">Contraseña: <i class="text-muted">(*)</i></label>';
-    $html .= '      <div class="input-group" id="show_hide_password">';
-    $html .= '          <input type="password" id="pass" name="pass" class="form-control" placeholder="Entre una contraseña" '.$disabled.' />';
-    $html .= '          <div class="input-group-append">';
-    $html .= '              <a href="#" class="btn btn-success"><i id="eyepass" class="fa fa-eye-slash" aria-hidden="true"></i></a>';
-    $html .= '          </div>';
-    $html .= '      </div>';
-    $html .= '  </div>';
-    $html .= '</div>';
-
-    if($refart){
-        $html .= '<hr />';
-        $html .= '<div class="form-row">';
-        $html .= '  <div class="form-group col-md-6">';
-        $html .= '      <h5>Referencias para importar</h5>';
-        $html .= '      <ul class="list-group">';
-        foreach ($refart as $v) {
-            $html .= '  <li class="list-group-item d-flex justify-content-between align-items-center">';
-            $html .= $v['artist_import'];
-            // $html .= '<button class="btn btn-icon btn-light mr-1" data-art="'.$v['artist_import'].'" data-idref="'.$v['id'].'" onclick="manage_art({\'name\':\'modal_delrefart\',\'info\':$(this)});"><i class="text-danger far fa-trash-alt"></i></button>';
-            $html .= '  </li">';
-        }
-        $html .= '      </ul>';
-        $html .= '  </div>';
-        $html .= '</div>';
-    }
-
-
-    $html .= '  <div class="form-group mt-3 text-right">';
-
-    if($artref){
-        $html .= '  <input type="hidden" id="refart" name="refart" class="form-control" value="'.$artref.'" />';
-    }
-    $html .= $imputidart; 
-    $html .= '      <button type="button" name="cancel_nav" id="cancel_nav" class="btn btn-danger btn-sm" onclick="$(`#panel`).slideUp();$(`html,body`).animate({ scrollTop: $(`body`).offset().top }, `slow`);$(`#crea_rol`).removeAttr(`disabled`);$(`#importxls`).removeAttr(`disabled`);">Cancelar</button>';
-    $html .= '      <button type="button" class="btn btn-sm btn-primary" onclick="manage_art(this.form);"> Aceptar </button>';
-    $html .= '  </div>';
-
-
-    $html .= '</form>';
-
-    return $html;
-}*/
-
-/*function tableArt()
-{
-    $html = '<table id="newartist" class="table table-sm table-striped dt-responsive mt-3 mb-4" style="width:100%">';
-    $html .= '</table>';
-
-    $objPrevImp = new ManArtist;
-    $artists = $objPrevImp->getAllArt();
-
-    $data = [];
-
-    if($artists && is_array($artists)){
-        
-        for($i=0;$i<count($artists);$i++){
-            $data[$i]['nombre'] = '<p>'.$artists[$i]['nombre_usr'].' '.$artists[$i]['apellido_usr'].'</p>';
-            $data[$i]['user'] = '<p>'.$artists[$i]['user_usr'].'</p>';
-            $data[$i]['email'] = '<p>'.$artists[$i]['email_usr'].'</p>';
-            $data[$i]['created'] = '<p>'.$artists[$i]['created'].'</p>';
-            $data[$i]['lastaccess'] = '<p>'.date("d/m/Y", strtotime($artists[$i]['lastaccess'])).'</p>';
-
-            $data[$i]['actions_view'] = '<button class="btn btn-icon btn-light mr-1" data-art="'.$artists[$i]['id_usr'].'" onclick="manage_art({\'name\':\'view_art\',\'info\':$(this)});"><i class="far fa-file-excel"></i></button>';
-            $data[$i]['actions_edt'] = '<button class="btn btn-icon btn-light mr-1" data-art="'.$artists[$i]['id_usr'].'" onclick="manage_art({\'name\':\'form_art\',\'info\':$(this)});"><i class="far fa-edit"></i></button>';
-
-            // $data[$i]['actions_imp'] = '<button class="btn btn-icon btn-light mr-1" data-art="'.$artists[$i]['artist'].'" onclick="manage_art({\'name\':\'artprevimp\',\'info\':$(this)});"><i class="fas fa-arrow-down"></i></button>';
-
-            // $data[$i]['actions_act'] = ($artists[$i]['act_usr'] == 1)?'<button class="btn btn-icon btn-light" data-user="'.$artists[$i]['id_usr'].'" data-act=0 onclick="manage_art({\'name\':\'activa_art\',\'info\':$(this)});"><i class="text-secondary far fa-eye"></i></button>':'<button class="btn btn-icon btn-light" data-user="'.$artists[$i]['id_usr'].'" data-act="1" onclick="manage_art({\'name\':\'activa_art\',\'info\':$(this)});"><i class="text-danger far fa-eye-slash"></i></button>';
-
-            // $data[$i]['actions_del'] = '<button class="btn btn-icon btn-light mr-1" data-art="'.$artists[$i]['id_user'].'" onclick="manage_art({\'name\':\'modal_delprevart\',\'info\':$(this)});"><i class="text-danger far fa-trash-alt"></i></button>';
-            
-        }   
-
-    }
-
-    return array(
-        'data'=>$data,
-        'table'=>$html,
-        'type'=>'art'
-    );
-}*/
-
-function tableArtTracks($tracks, $change_usd /*, $idart,$prevImp = true*/)
+function tableArtTracks($tracks, $change_usd)
 {
     $data = [];
 
@@ -487,8 +248,6 @@ function tableArtRetail($retail, $change_usd)
     if($retail && is_array($retail)){
         
         for($i=0;$i<count($retail);$i++){
-            // $data[$i]['year'] = $retail[$i]['year'];
-            // $data[$i]['month'] = $retail[$i]['month'];
             $data[$i]['retailer'] = $retail[$i]['retailer'];
             $data[$i]['qty'] = $retail[$i]['qty'];            
             $data[$i]['receipts'] = $retail[$i]['receipts'];  
@@ -513,8 +272,6 @@ function tableArtCountry($country, $change_usd)
     if($country && is_array($country)){
         
         for($i=0;$i<count($country);$i++){
-            // $data[$i]['year'] = $country[$i]['year'];
-            // $data[$i]['month'] = $country[$i]['month'];
             $data[$i]['country'] = $country[$i]['country'];
             $data[$i]['qty'] = $country[$i]['qty'];            
             $data[$i]['receipts'] = $country[$i]['receipts'];  
