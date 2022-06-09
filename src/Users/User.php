@@ -51,6 +51,10 @@
             return $this->user['percentart'];
         }
 
+        public function getCurrencyViews(){
+            return $this->user['currencyviews'];
+        }
+
         public function isAdmin(){
             return ($this->user['role'] === 'sadmin' || $this->user['role'] === 'admin')?true:false;
         }
@@ -79,6 +83,7 @@
             $this->user['lastaccess'] = $dbuser['lastaccess'];
             $this->user['act'] = $dbuser['act_usr'];
             $this->user['percentart'] = $dbuser['percent_usr'];
+            $this->user['currencyview'] = $dbuser['currencyview'];
 
         }
 

@@ -122,7 +122,7 @@ function proccess_ajaxfile(data_post, uri, loading = false, titleloading = 'Load
         data: data_post,
         dataType: 'json',
         beforeSend: function(obj){
-            // console.log(obj);
+            console.log(obj);
         },
         success:function(response){
             // console.log(response);

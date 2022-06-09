@@ -32,9 +32,12 @@ if(isset($_POST['action'])){
                     $response['btn_imp'] = btn_imp();
                 }
 
+            }else{
+                $response = ['ERROR'=>'Error al agregar el artista. '.$objArt->get_error()];
             }
         break;
         case 'edt_art':
+            // var_dump($_POST);
             $objArt = new ManArtist;
             $idart = $objArt->updArt($_POST);
             if($idart){
@@ -43,7 +46,10 @@ if(isset($_POST['action'])){
                     $response['btn_imp'] = btn_imp();
                 }
 
+            }else{
+                $response = ['ERROR'=>'Error al editar el artista. '.$objArt->get_error()];
             }
+
         break;
 
         case 'view_art':
@@ -290,6 +296,10 @@ function form_art($idart = null, $artref =null)
     $imputidart = '';
     $refart = null;
 
+    $currencyUSDARG = 'checked';
+    $currencyARG = '';
+    $currencyUSD = '';
+
     if($idart || $idart != 0){
         $objArt = new ManArtist;
         $art = $objArt->getUserbyId($idart);
@@ -307,6 +317,13 @@ function form_art($idart = null, $artref =null)
 
     $disabled = 'disabled';
     $checked = '';
+
+    if($art){
+        $currencyUSDARG = ($art[0]['currencyview'] == 0)?'checked':'';
+        $currencyARG = ($art[0]['currencyview'] == 1)?'checked':'';
+        $currencyUSD = ($art[0]['currencyview'] == 2)?'checked':'';
+    }
+    
 
     if(!empty(trim($user_usr))){
         $disabled = '';
@@ -345,10 +362,26 @@ function form_art($idart = null, $artref =null)
     $html .= '</div>';
 
     $html .= '<div class="form-row"><div class="col-12"><hr />';
-    $html .=                '<div class="form-check form-switch">';
-    $html .=                    '<input class="form-check-input" type="checkbox" role="switch" id="canlog" name="canlog" value="canlog" onclick="activatelog(this)" '.$checked.' />';
-    $html .=                    '<label class="form-check-label" for="hashead">Puede logearse</label>';
-    $html .=                '</div>';
+    $html .= '<h6 class="p-2 bg-light font-weight-bold">Moneda que mostrará al artista.</h6>';
+    $html .= '  <div class="form-check form-check-inline">';
+    $html .= '      <input class="form-check-input" type="radio" name="currencyview" id="currencyviewusd" value="2" '.$currencyUSD.' />';
+    $html .= '      <label class="form-check-label" for="currencyviewusd">USD</label>';
+    $html .= '  </div>';
+    $html .= '  <div class="form-check form-check-inline">';
+    $html .= '      <input class="form-check-input" type="radio" name="currencyview" id="currencyviewarg" value="1" '.$currencyARG.' />';
+    $html .= '      <label class="form-check-label" for="currencyviewusd">ARG</label>';
+    $html .= '  </div>';
+    $html .= '  <div class="form-check form-check-inline">';
+    $html .= '      <input class="form-check-input" type="radio" name="currencyview" id="currencyviewusdarg" value="0" '.$currencyUSDARG.' />';
+    $html .= '      <label class="form-check-label" for="currencyviewusdarg">USD y ARG</label>';
+    $html .= '  </div>';
+    $html .= '</div></div>';
+
+    $html .= '<div class="form-row"><div class="col-12"><hr />';
+    $html .= '  <div class="form-check form-switch">';
+    $html .= '      <input class="form-check-input" type="checkbox" role="switch" id="canlog" name="canlog" value="canlog" onclick="activatelog(this)" '.$checked.' />';
+    $html .= '      <label class="form-check-label" for="hashead">Puede logearse</label>';
+    $html .= '  </div>';
     $html .= '</div></div>';
 
     $html .= '<div class="form-row">';
@@ -379,7 +412,7 @@ function form_art($idart = null, $artref =null)
         $html .= '<hr />';
         $html .= '<div class="form-row">';
         $html .= '  <div class="form-group col-md-6">';
-        $html .= '      <h5>Referencias para importar</h5>';
+        $html .= '      <h6 class="p-2 bg-light font-weight-bold">Alias <code><i class="text-muted">(Referencias para importar)</i></code></h6>';
         $html .= '      <ul class="list-group">';
         foreach ($refart as $v) {
             $html .= '  <li class="list-group-item d-flex justify-content-between align-items-center">';
@@ -391,7 +424,6 @@ function form_art($idart = null, $artref =null)
         $html .= '  </div>';
         $html .= '</div>';
     }
-
 
     $html .= '  <div class="form-group mt-3 text-right">';
 
@@ -448,9 +480,22 @@ function tableArt()
     );
 }
 
-function tableArtTracks($tracks, $change_usd /*, $idart,$prevImp = true*/)
+function tableArtTracks($tracks, $change_usd)
 {
     $data = [];
+    
+    $columns = [
+        ['title'=>'Discos','data'=>'title_disk','render'=>'string'],
+        ['title'=>'Tracks','data'=>'title_track','render'=>'string'], 
+        ['title'=>'Tipo Trans','data'=>'type_trans','render'=>'string'], 
+        ['title'=>'Vistas','data'=>'qty','render'=>'number'], 
+        ['title'=>'Recibido (USD)','data'=>'receipts','render'=>'currency'], 
+        ['title'=>'Recibido (ARG)','data'=>'total_ar','render'=>'currency'], 
+        ['title'=>'Recibe Art (USD)','data'=>'totalart_usd','render'=>'currency'], 
+        ['title'=>'Recibe Art (ARG)','data'=>'totalart_ar','render'=>'currency']
+    ];
+
+    $columnstotals = [3,4,5,6,7];
 
     if($tracks && is_array($tracks)){
         
@@ -469,8 +514,20 @@ function tableArtTracks($tracks, $change_usd /*, $idart,$prevImp = true*/)
 
     return array(
         'data'=>$data,
-        'table'=>'<table id="trackstable" class="table table-sm table-striped dt-responsive mt-3 mb-4" style="width:100%"></table>',
-        'type'=>'tracks'
+        'table'=>'<table id="trackstable" class="table table-sm table-striped dt-responsive mt-3 mb-4" style="width:100%"><tfoot>
+        <tr>
+            <th colspan="3" style="text-align:right"></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </tfoot></table>',
+        'type'=>'tracks',
+        'columns'=>$columns,
+        'columnstotals'=>$columnstotals,
+        'tablaid'=>'trackstable'
     );
 }
 
@@ -481,8 +538,6 @@ function tableArtRetail($retail, $change_usd)
     if($retail && is_array($retail)){
         
         for($i=0;$i<count($retail);$i++){
-            // $data[$i]['year'] = $retail[$i]['year'];
-            // $data[$i]['month'] = $retail[$i]['month'];
             $data[$i]['retailer'] = $retail[$i]['retailer'];
             $data[$i]['qty'] = $retail[$i]['qty'];            
             $data[$i]['receipts'] = $retail[$i]['receipts'];  
@@ -493,10 +548,26 @@ function tableArtRetail($retail, $change_usd)
 
     }
 
+    $columns = [ 
+        ['title'=>'Tiendas','data'=>'retailer','render'=>'string'], 
+        ['title'=>'Vistas','data'=>'qty','render'=>'number'], 
+        ['title'=>'Recibido (USD)','data'=>'receipts','render'=>'currency'], 
+        ['title'=>'Recibido (ARG)','data'=>'total_ar','render'=>'currency'], 
+        ['title'=>'Recibe Art (USD)','data'=>'totalart_usd','render'=>'currency'], 
+        ['title'=>'Recibe Art (ARG)','data'=>'totalart_ar','render'=>'currency']
+    ];
+
+    $columnstotals = [1,2,3,4,5];
+
     return array(
         'data'=>$data,
-        'table'=>'<table id="retailtable" class="table table-sm table-striped dt-responsive mt-3 mb-4" style="width:100%"></table>',
-        'type'=>'retailer'
+        'table'=>'<table id="retailtable" class="table table-sm table-striped dt-responsive mt-3 mb-4" style="width:100%">
+        <tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>
+        </table>',
+        'type'=>'retailer',
+        'columns'=>$columns,
+        'columnstotals'=>$columnstotals,
+        'tablaid'=>'retailtable'
     );
 }
 
@@ -507,8 +578,6 @@ function tableArtCountry($country, $change_usd)
     if($country && is_array($country)){
         
         for($i=0;$i<count($country);$i++){
-            // $data[$i]['year'] = $country[$i]['year'];
-            // $data[$i]['month'] = $country[$i]['month'];
             $data[$i]['country'] = $country[$i]['country'];
             $data[$i]['qty'] = $country[$i]['qty'];            
             $data[$i]['receipts'] = $country[$i]['receipts'];  
@@ -519,10 +588,26 @@ function tableArtCountry($country, $change_usd)
 
     }
 
+    $columns = [ 
+        ['title'=>'Países','data'=>'country','render'=>'string'], 
+        ['title'=>'Vistas','data'=>'qty','render'=>'number'], 
+        ['title'=>'Recibido (USD)','data'=>'receipts','render'=>'currency'], 
+        ['title'=>'Recibido (ARG)','data'=>'total_ar','render'=>'currency'], 
+        ['title'=>'Recibe Art (USD)','data'=>'totalart_usd','render'=>'currency'], 
+        ['title'=>'Recibe Art (ARG)','data'=>'totalart_ar','render'=>'currency']
+    ];
+
+    $columnstotals = [1,2,3,4,5];
+
     return array(
         'data'=>$data,
-        'table'=>'<table id="countrytable" class="table table-sm table-striped dt-responsive mt-3 mb-4" style="width:100%"></table>',
-        'type'=>'country'
+        'table'=>'<table id="countrytable" class="table table-sm table-striped dt-responsive mt-3 mb-4" style="width:100%">
+        <tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>
+        </table>',
+        'type'=>'country',
+        'columns'=>$columns,
+        'columnstotals'=>$columnstotals,
+        'tablaid'=>'countrytable'
     );
 }
 

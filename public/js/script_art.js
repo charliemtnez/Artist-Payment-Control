@@ -112,80 +112,6 @@ function manage_art(form){
 
             break;
 
-            /*case 'asociateart':
-                var asoci = $('select[name=artref] option').filter(':selected').val();
-                var art = form.info.data('art');
-                var formData = new FormData();
-                formData.append('action',form.name);
-                formData.append('idartasoc',asoci);
-                formData.append('artref',art);
-                titleloading = 'Asociando artrista...';
-            break;*/
-
-            /*case 'modal_delprevart':
-
-                btn_ok = '<button type="button" data-art="'+form.info.data('art')+'" onclick="manage_imp({\'name\':\'del_prevartimp\',\'info\':$(this)})" class="btn btn-success">Confirmar</button>';
-                btn_cancel = '<button type="button" onclick="CloseModal()" class="btn btn-danger" style="margin-right:10px;">Cancelar</button>';
-                footer = '<div class="form-group text-right">'+btn_cancel+btn_ok+'</div>';
-                proccess_modal('<div class="alert alert-danger" role="alert">Está a punto de borrar el artista '+form.info.data('art')+'.¿Confirma esta acción?</div>','Borrar Artista',footer,true);
-                return false;
-
-            break;*/
-            /*case 'modaldelallimp':
-
-                btn_ok = '<button type="button" data-art="all" onclick="manage_imp({\'name\':\'del_allprevartimp\',\'info\':$(this)})" class="btn btn-success">Confirmar</button>';
-                btn_cancel = '<button type="button" onclick="CloseModal()" class="btn btn-danger" style="margin-right:10px;">Cancelar</button>';
-                footer = '<div class="form-group text-right">'+btn_cancel+btn_ok+'</div>';
-                proccess_modal('<div class="alert alert-danger" role="alert">Está a punto de borrar toda la información previa a importar.¿Confirma esta acción?</div>','Borrar Información',footer,true);
-                return false;
-
-            break;*/
-
-            /*case 'del_prevartimp':
-            case 'del_allprevartimp':
-
-                var formData = new FormData();
-                formData.append('action',form.name);
-                formData.append('art',form.info.data('art'));
-                titleloading = 'Borrando Artista...';
-
-            break;*/
-
-            /*case 'imp_data':
-                if(!num.test(form.change_usd.value.trim())) { 
-                    form.change_usd.focus();
-                    $('#'+form.change_usd.id).css("border-color", "#dc3545");
-                    proccess_modal('<div class="alert alert-danger" role="alert">Es necesario que indique el valor del cambio USD/ARG con el cual se hará la entrada de los datos.</div>','Error en el Campo Valor del Cambio USD');
-                    return false; 
-                }
-                if(!form.importfile.value.trim()) { 
-                    proccess_modal('<div class="alert alert-danger" role="alert">Es Necesario que seleccione el fichero a importar</div>','Error para Importar');
-                    return false; 
-                }
-
-                loading = true;
-                var formData = new FormData(form);
-                formData.append('action',form.name);
-
-            break;*/
-            /*case 'artprevimp':
-                var formData = new FormData();
-                formData.append('action',form.name);
-                formData.append('artist',form.info.data('art'));
-                titleloading = 'Cargando Artista antes de importar...';
-            break;*/
-            /*case 'imp_artinfo':
-                var formData = new FormData();
-                formData.append('action',form.name);
-                formData.append('artref',form.info.data('art'));
-                formData.append('idartref',form.info.data('idartref'));
-                titleloading = 'Importando información del Artista...';
-            break;*/
-            /*case 'impArtLote':
-                var formData = new FormData();
-                formData.append('action',form.name);
-                titleloading = 'Importando información de los artistas...';
-            break;*/
             default:
                 return false;
             
@@ -244,8 +170,6 @@ function manage_art(form){
         }
 
         if (obj.hasOwnProperty("view_artperiod")) {
-
-            console.log(obj.view_artperiod);
             
             $('#viewtotalperiod').html(obj.view_artperiod.view_arttotalperiod);
 
@@ -253,86 +177,20 @@ function manage_art(form){
 
             if (obj.view_artperiod.hasOwnProperty("tableArtTracks")) {
 
-            
-                $('#tracks').html(obj.view_artperiod.tableArtTracks.table);
-    
-                $('#trackstable').DataTable({
-                    destroy: true,
-                    order: [],
-                    responsive: true,
-                    processing: true,
-                    lengthChange: false,
-                    pageLength: 25,
-                    language:{"url":'js/datatable_spanish.json'},
-                    data:Object.values(obj.view_artperiod.tableArtTracks.data),
-                    columns: [
-                        // { title: "Año",data:"year"},
-                        // { title: "Mes",data:"month"},
-                        { title: "Discos",data:"title_disk"},
-                        { title: "Tracks",data:"title_track"},
-                        { title: "Tipo Trans",data:"type_trans"},
-                        { title: "Vistas",data:"qty",render: $.fn.dataTable.render.number( '.', ',', 0, '' )},
-                        { title: "Recibido (USD)",data:"receipts",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibido (ARG)",data:"total_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibe Art (USD)",data:"totalart_usd",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibe Art (ARG)",data:"totalart_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )}
-                    ]
-                });
-    
+                create_table(obj.view_artperiod.tableArtTracks,'tracks');
+
             }
 
             if (obj.view_artperiod.hasOwnProperty("tableArtRetail")) {
-            
-                $('#source').html(obj.view_artperiod.tableArtRetail.table);
-    
-                $('#retailtable').DataTable({
-                    destroy: true,
-                    order: [],
-                    responsive: true,
-                    processing: true,
-                    lengthChange: false,
-                    pageLength: 25,
-                    language:{"url":'js/datatable_spanish.json'},
-                    data:Object.values(obj.view_artperiod.tableArtRetail.data),
-                    columns: [
-                        // { title: "Año",data:"year"},
-                        // { title: "Mes",data:"month"},
-                        { title: "Tiendas",data:"retailer"},
-                        { title: "Vistas",data:"qty",render: $.fn.dataTable.render.number( '.', ',', 0, '' )},
-                        { title: "Recibido (USD)",data:"receipts",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibido (ARG)",data:"total_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibe Art (USD)",data:"totalart_usd",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibe Art (ARG)",data:"totalart_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )}
-                    ]
-                });
-    
+
+                create_table(obj.view_artperiod.tableArtRetail,'source');
+                
             }
 
             if (obj.view_artperiod.hasOwnProperty("tableArtCountry")) {
-            
-                $('#country').html(obj.view_artperiod.tableArtCountry.table);
-    
-                $('#countrytable').DataTable({
-                    destroy: true,
-                    order: [],
-                    responsive: true,
-                    processing: true,
-                    lengthChange: false,
-                    pageLength: 25,
-                    language:{"url":'js/datatable_spanish.json'},
-                    data:Object.values(obj.view_artperiod.tableArtCountry.data),
-                    columns: [
-                        // { title: "Año",data:"year"},
-                        // { title: "Mes",data:"month"},
-                        { title: "Paises",data:"country"},
-                        { title: "Vistas",data:"qty",render: $.fn.dataTable.render.number( '.', ',', 0, '' )},
-                        { title: "Recibido (USD)",data:"receipts",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibido (ARG)",data:"total_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibe Art (USD)",data:"totalart_usd",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )},
-                        { title: "Recibe Art (ARG)",data:"totalart_ar",render: $.fn.dataTable.render.number( '.', ',', 6, '$ ' )}
-                    ]
-                });
-    
+
+                create_table(obj.view_artperiod.tableArtCountry,'country');
+
             }
 
         }
@@ -399,7 +257,8 @@ function manage_art(form){
 
 }
 
-function create_chart(data){
+function create_chart(data)
+{
     let month_period = [];
     let period_value = [];
     let period_value_art = [];
@@ -479,4 +338,81 @@ function create_chart(data){
     } catch (error) {
         console.log('chart tiene un error: '+ error);
     }
+}
+
+function create_table(data,idtable)
+{
+    
+    $('#'+idtable).html(data.table);
+
+    let columnstodo = Object.values(data.columns).map(function(value,index){
+        let obj = {title:value['title'],data:value['data']};
+        
+        if(value.hasOwnProperty("render")){
+            if(value['render'] == 'number'){
+                obj['render'] = $.fn.dataTable.render.number( '.', ',', 0, '' )
+            }
+            if(value['render'] == 'currency'){
+                obj['render'] = $.fn.dataTable.render.number( '.', ',', 6, '$ ' )
+            }
+        }
+
+        return obj
+    });
+
+    let columnstotals =  Object.values(data.columnstotals);
+
+    $('#'+data.tablaid).DataTable({
+        destroy: true,
+        order: [],
+        responsive: true,
+        processing: true,
+        lengthChange: false,
+        pageLength: 25,
+        language:{"url":'js/datatable_spanish.json'},
+        data:Object.values(data.data),
+        columns:columnstodo,
+        showFooter:false,
+        footerCallback:function(row, data, start, end, display) {
+
+            var api = this.api(),data;
+
+            var intVal = function(i) {
+                return typeof i === 'string' ?
+                i.replace(/[\$,]/g, '') * 1 :
+                typeof i === 'number' ?
+                i : 0;
+            };
+
+            if(columnstotals){
+                let totals  = columnstotals.map(function(value,index){
+                    return api.column(value).data().reduce(function(a,b){
+                            return intVal(a) + intVal(b);
+                        },0);
+                    });
+
+                let pagetotals  = columnstotals.map(function(value,index){
+                    return api.column(value,{
+                                page: 'current'
+                            }).data().reduce(function(a,b){
+                                    return intVal(a) + intVal(b);
+                                },0);
+                            });
+
+                if (end == display.length) {
+                    columnstotals.map(function(value,index){
+                        let n = Math.round((totals[index]+ Number.EPSILON) * 10000) / 10000;
+                        $( api.column( value ).footer() ).html(n.toLocaleString("es-AR",{maximumFractionDigits:4}));
+                    });
+                }else{
+                    columnstotals.map(function(value,index){
+                        $( api.column( value ).footer() ).html('');
+                    });
+                }
+            }
+
+        }
+
+    });
+
 }

@@ -132,12 +132,13 @@ class MagImport extends Opdb
 
             if(isset($add) && !empty($add)){
                 $this->delArtImport($artref);
+                return ['success'=>'OK','id'=>$add];
+            }else{
+                return false;
             }
 
-            return true;
-
         }catch(Exception $e){
-            return false;
+            return ['success'=>'NOK','msgerror'=>$e->getMessage()];
         }
 
         return false;

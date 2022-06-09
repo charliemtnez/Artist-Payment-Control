@@ -74,7 +74,7 @@
                         change_usd,
                         Sum(total_period) as totalusd,
                         Sum(total_period_arg) as totalarg,
-                        Sum(total_period_artarg)/change_usd as totalartistusd,
+                        Sum(total_period_artarg / change_usd) as totalartistusd,
                         Sum(total_period_artarg) as totalartist,
                         Sum(total_period_views) as totalviews
                     FROM art_importdata 
@@ -89,8 +89,39 @@
                     $yearmonth[$v['year']][$v['month']] = [
                         'totalusd' => $v['totalusd'],
                         'totalarg' => $v['totalarg'],
-                        'totalartistusd' => $v['totalartistusd'],
                         'totalartist' => $v['totalartist'],
+                        'totalartistusd' => $v['totalartistusd'],
+                        'totalviews' => $v['totalviews']
+                    ];
+                }
+            }
+
+            return ['totals'=>$totals,'yearmonth'=>$yearmonth];
+        }
+
+        public function getTotalsbyYears()
+        {
+            $sql = 'SELECT
+                        `year`,
+                        `month`,
+                        Sum(total_period) as totalusd,
+                        Sum(total_period_arg) as totalarg,
+                        Sum(total_period_artarg / change_usd) as totalartistusd,
+                        Sum(total_period_artarg) as totalartist,
+                        Sum(total_period_views) as totalviews
+                    FROM art_importdata 
+                    GROUP BY `year`, `month` 
+                    ORDER BY `year` DESC, `month` DESC';
+
+            $totals = $this->execSql($sql);
+            $yearmonth = [];
+            if (!empty($totals) && is_array($totals)) {
+                foreach ($totals as $v) {
+                    $yearmonth[$v['year']][$v['month']] = [
+                        'totalusd' => $v['totalusd'],
+                        'totalarg' => $v['totalarg'],
+                        'totalartist' => $v['totalartist'],
+                        'totalartistusd' => $v['totalartistusd'],
                         'totalviews' => $v['totalviews']
                     ];
                 }
@@ -110,6 +141,7 @@
                 'password' => (isset($data['password']))?$data['password']:null,
                 'type' => 'art',
                 'active' => (isset($data['canlog']))?1:0,
+                'currencyview' => (isset($data['currencyview']))?$data['currencyview']:0,
             );
 
             return $this->addUser($art);
@@ -127,6 +159,7 @@
                 'password' => (isset($data['password']))?$data['password']:null,
                 'type' => 'art',
                 'active' => (isset($data['canlog']))?1:0,
+                'currencyview' => (isset($data['currencyview']))?$data['currencyview']:0
             );
 
             return $this->updUser($art);

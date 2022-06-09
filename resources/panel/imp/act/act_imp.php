@@ -299,11 +299,12 @@ if(isset($_POST['action'])){
 
 function responseImplote($data)
 {
+ 
     $html = '';
     $html .= '<section>';
     if(!empty($data['artsuccess'])){
-        $html .= '<div class="row">';
-        $html .= '  <h5 class="bg-success">Se logró importar '.count($data['artsuccess']).' artistas:</h5>';
+        $html .= '<div class="">';
+        $html .= '  <h6 class="bg-success p-2 text-white">Se logró importar '.count($data['artsuccess']).' artistas:</h6>';
         $html .= '  <ul>';
         foreach($data['artsuccess'] as $v){
             $html .= '<li>'.$v['refimp'].'</li>';
@@ -311,14 +312,14 @@ function responseImplote($data)
         $html .= '  </ul>';
         $html .= '</div>';
     }else{
-        $html .= '<div class="row">';
-        $html .= '  <h5 class="bg-danger">NO se importaron Artistas.</h5>';
+        $html .= '<div class="">';
+        $html .= '  <h6 class="p-2">NO se importaron Artistas.</h6>';
         $html .= '</div>';
     }
     $html .= '<hr />';
     if(!empty($data['artfailed'])){
-        $html .= '<div class="row">';
-        $html .= '  <h5 class="bg-danger">NO se logró importar '.count($data['artfailed']).' artistas:</h5>';
+        $html .= '<div class="">';
+        $html .= '  <h6 class="bg-danger p-2 text-white">NO se logró importar '.count($data['artfailed']).' artistas:</h6>';
         $html .= '  <ul>';
         foreach($data['artfailed'] as $v){
             $html .= '<li>'.$v['refimp'].'</li>';
@@ -326,8 +327,8 @@ function responseImplote($data)
         $html .= '  </ul>';
         $html .= '</div>';
     }else{
-        $html .= '<div class="row">';
-        $html .= '  <h5 class="bg-success">NO hubo errores al importar.</h5>';
+        $html .= '<div class="">';
+        $html .= '  <h6 class="p-2">NO hubo errores al importar.</h6>';
         $html .= '</div>';
     }
     $html .= '</section>';
@@ -350,9 +351,9 @@ function impArtLote($user_id)
                 'idartref'=>$v['id_user']
             ];
             $imp = impArtInfo($data,$user_id);
-            if($imp['success'] == 'NOK'){
+            if(!empty($imp) && $imp['success'] == 'NOK'){
                 $failed[] = ['id_art'=>$v['id_user'],'refimp'=>$v['artist_import']];
-            }elseif($imp['success'] == 'NOK'){
+            }elseif(!empty($imp) && $imp['success'] == 'OK'){
                 $success[] = ['id_art'=>$v['id_user'],'refimp'=>$v['artist_import']];
             }
         }
@@ -370,7 +371,9 @@ function impArtInfo($data,$userid)
 
     $percentArt = ($art)?$art[0]['percentart'] :0;
 
-    return ($objPrevArt->addImpDatArt($data['artref'],$data['idartref'],$percentArt,$userid))?['success'=>'OK']:['success'=>'NOK','msgerror'=>$objPrevArt->get_error()];
+    $imp = $objPrevArt->addImpDatArt($data['artref'],$data['idartref'],$percentArt,$userid);
+
+    return ($imp)?$imp:false;
 
 }
 
